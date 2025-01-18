@@ -1,0 +1,200 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página Inicial</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2; /* Cinza claro */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+        .button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 15px 30px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            border-radius: 5px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .button:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+        .help-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: #FF5733;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .help-button:hover {
+            background-color: #e04e2d;
+            transform: scale(1.05);
+        }
+        /* Estilização do Pop-up */
+        .popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s, opacity 0.3s;
+        }
+        .popup.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .popup-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .popup-content button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .popup-content button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <a href="#" class="help-button" id="helpBtn">Nos Ajude</a>
+
+    <div class="container">
+        <h1 id="greeting">Olá, Usuário!</h1>
+        <p id="timeOfDay"></p>
+        <a href="pagina2.html" class="button">Bíblia Sagrada</a>
+        <a href="estudo-biblico.html" class="button">Estudo Bíblico</a>
+        <a href="ano-biblico.html" class="button">Ano Bíblico</a>
+    </div>
+
+    <!-- Pop-up de Saudação -->
+    <div class="popup" id="popupSaudacao">
+        <div class="popup-content">
+            <h2>Bem-vindo!</h2>
+            <p>Qual é o seu nome?</p>
+            <input type="text" id="usernameInput" placeholder="Digite seu nome" />
+            <button id="saveNameBtn">Salvar</button>
+        </div>
+    </div>
+
+    <!-- Pop-up do Nos Ajude -->
+    <div class="popup" id="popupAjuda">
+        <div class="popup-content">
+            <h2>Nos Ajude!</h2>
+            <p>Faça uma doação para mantermos o aplicativo sem anúncios.</p>
+            <p><strong>Pix:</strong> 47.867.145/0001-58</p>
+            <button id="copyPixBtn">Copiar Pix</button>
+            <button id="closeHelpPopupBtn">Fechar</button>
+        </div>
+    </div>
+
+    <script>
+        // Saudação com base no horário
+        function updateGreeting() {
+            const now = new Date();
+            const hours = now.getHours();
+            const username = localStorage.getItem('username') || 'Usuário';
+            let timeOfDay = 'Boa noite';
+
+            if (hours >= 6 && hours < 12) timeOfDay = 'Bom dia';
+            else if (hours >= 12 && hours < 19) timeOfDay = 'Boa tarde';
+
+            document.getElementById('greeting').textContent = `Olá, ${username}!`;
+            document.getElementById('timeOfDay').textContent = timeOfDay;
+        }
+
+        // Pop-up de Saudação
+        function showSaudacaoPopup() {
+            if (!localStorage.getItem('username')) {
+                document.getElementById('popupSaudacao').classList.add('active');
+            }
+        }
+
+        document.getElementById('saveNameBtn').addEventListener('click', () => {
+            const username = document.getElementById('usernameInput').value.trim();
+            if (username) {
+                localStorage.setItem('username', username);
+                document.getElementById('popupSaudacao').classList.remove('active');
+                updateGreeting();
+            }
+        });
+
+        // Pop-up de Ajuda
+        function showAjudaPopup() {
+            const today = new Date().getDay(); // 0=Dom, 6=Sáb
+            if ([0, 3, 6].includes(today)) {
+                document.getElementById('popupAjuda').classList.add('active');
+            }
+        }
+
+        document.getElementById('helpBtn').addEventListener('click', () => {
+            document.getElementById('popupAjuda').classList.add('active');
+        });
+
+        document.getElementById('closeHelpPopupBtn').addEventListener('click', () => {
+            document.getElementById('popupAjuda').classList.remove('active');
+        });
+
+        document.getElementById('copyPixBtn').addEventListener('click', () => {
+            navigator.clipboard.writeText('47.867.145/0001-58');
+            alert('Pix copiado para a área de transferência!');
+        });
+
+        // Executa ao carregar a página
+        updateGreeting();
+        showSaudacaoPopup();
+        showAjudaPopup();
+    </script>
+</body>
+</html>
